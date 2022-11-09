@@ -20,14 +20,29 @@ app.get('/', (req, res) => {
 
 app.use('/api', apiRoutes);
 
+//console error 
+app.use((error, req, res, next) => {
+    if (process.env.NODE_ENV === 'production') {
+        console.error(error);
+    }
+
+    next(error);
+})
 
 // custom error handler
 app.use((error, req, res, next) => {
+    if (process.env.NODE_ENV === 'production') {
+        res.status(500).json({
+            message: error.message,
+            stack: error.stack
+        })
+    }
 
-    res.status(500).json({
-        message: error.message,
-        stack: error.stack
-    })
+    else {
+        res.status(500).json({
+            message: error.message
+        })
+    }
 
 })
 
